@@ -12,6 +12,19 @@ export function trackVisit(
   referer: string | null
 ): void {
   const db = getDb();
+
+  // 同一 IP 同一天访问同一页面只算一次
+  if (ipAddress) {
+    const existing = db
+      .prepare(
+        `SELECT id FROM visitor_logs
+         WHERE landing_page_id = ? AND ip_address = ? AND date(visited_at) = date('now')
+         LIMIT 1`
+      )
+      .get(landingPageId, ipAddress) as any;
+    if (existing) return;
+  }
+
   db.prepare(
     `INSERT INTO visitor_logs (landing_page_id, ip_address, user_agent, referer)
      VALUES (?, ?, ?, ?)`
