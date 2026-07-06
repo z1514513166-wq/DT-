@@ -75,9 +75,16 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
 
   const sectionData = content.sectionData || {};
 
-  // ---- 获取某实例的数据 ----
+  // ---- 获取某实例的数据（列表类型返回 items 数组）----
   const getInstanceData = (inst: SectionInstance): any => {
-    if (sectionData[inst.id]) return sectionData[inst.id];
+    const sd = sectionData[inst.id];
+    if (sd) {
+      // 列表类型：sectionData 存的是 { items, title }，返回 items
+      if (inst.key === 'features' || inst.key === 'testimonials') {
+        return sd.items || [];
+      }
+      return sd;
+    }
     const mainMap: Record<string, any> = {
       hero: content.hero, features: content.features, about: content.about,
       testimonials: content.testimonials, cta: content.cta, footer: content.footer,
@@ -85,9 +92,22 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
     return mainMap[inst.key] || {};
   };
 
-  // ---- 更新某实例的数据 ----
+  // ---- 获取某实例的标题 ----
+  const getInstanceTitle = (inst: SectionInstance): string | undefined => {
+    const sd = sectionData[inst.id];
+    if (sd?.title !== undefined) return sd.title;
+    if (inst.key === 'features') return content.featuresTitle;
+    if (inst.key === 'testimonials') return content.testimonialsTitle;
+    return undefined;
+  };
+
+  // ---- 更新某实例的数据（列表类型自动包装）----
   const updateInstanceData = (inst: SectionInstance, newData: any) => {
-    setContent({ ...content, sectionData: { ...sectionData, [inst.id]: newData } });
+    if (inst.key === 'features' || inst.key === 'testimonials') {
+      setContent({ ...content, sectionData: { ...sectionData, [inst.id]: newData } });
+    } else {
+      setContent({ ...content, sectionData: { ...sectionData, [inst.id]: newData } });
+    }
   };
 
   // ---- 拖拽排序 ----
@@ -135,15 +155,18 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
     const id = genSectionId();
     const newOrder = [...order, { id, key }];
     const defaults = getDefaultContent();
-    const dataMap: Record<string, any> = {
-      hero: defaults.hero,
-      features: defaults.features,
-      about: defaults.about,
-      testimonials: defaults.testimonials,
-      cta: defaults.cta,
-      footer: defaults.footer,
-    };
-    const newSD = { ...sectionData, [id]: dataMap[key] || {} };
+    let instanceData: any;
+    if (key === 'features') {
+      instanceData = { items: defaults.features, title: defaults.featuresTitle };
+    } else if (key === 'testimonials') {
+      instanceData = { items: defaults.testimonials, title: defaults.testimonialsTitle };
+    } else {
+      const dataMap: Record<string, any> = {
+        hero: defaults.hero, about: defaults.about, cta: defaults.cta, footer: defaults.footer,
+      };
+      instanceData = dataMap[key] || {};
+    }
+    const newSD = { ...sectionData, [id]: instanceData };
     setContent({ ...content, sectionOrder: newOrder, sectionData: newSD });
   };
 
@@ -270,24 +293,32 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
               {expandedSection === inst.id && (
                 <div className="px-6 pb-6 border-t border-gray-800 pt-4">
                   {inst.key === 'hero' && <HeroEditor hero={data} onChange={(v) => updateInstanceData(inst, v)} />}
-                  {inst.key === 'features' && (
-                    <FeaturesEditor features={Array.isArray(data) ? data : content.features}
-                      featuresTitle={sectionData[inst.id]?.featuresTitle ?? content.featuresTitle}
-                      onChange={(v) => updateInstanceData(inst, v)}
-                      onTitleChange={(t) => updateInstanceData(inst, { ...data, featuresTitle: t })} />
-                  )}
+                  {inst.key === 'features' && (() => {
+                    const items = Array.isArray(data) ? data : content.features;
+                    const t = getInstanceTitle(inst);
+                    return (
+                      <FeaturesEditor features={items}
+                        featuresTitle={t}
+                        onChange={(v) => updateInstanceData(inst, { items: v, title: t })}
+                        onTitleChange={(title) => updateInstanceData(inst, { items, title })} />
+                    );
+                  })()}
                   {inst.key === 'about' && (
                     <AboutEditor avatarUrl={data.avatarUrl ?? null} companyName={data.companyName ?? ''}
                       description={data.description ?? ''} backgroundColor={data.backgroundColor ?? '#0a0a0a'}
                       backgroundImage={data.backgroundImage ?? null}
                       onChange={(v) => updateInstanceData(inst, v)} />
                   )}
-                  {inst.key === 'testimonials' && (
-                    <TestimonialsEditor testimonials={Array.isArray(data) ? data : content.testimonials}
-                      testimonialsTitle={sectionData[inst.id]?.testimonialsTitle ?? content.testimonialsTitle}
-                      onChange={(v) => updateInstanceData(inst, v)}
-                      onTitleChange={(t) => updateInstanceData(inst, { ...data, testimonialsTitle: t })} />
-                  )}
+                  {inst.key === 'testimonials' && (() => {
+                    const items = Array.isArray(data) ? data : content.testimonials;
+                    const t = getInstanceTitle(inst);
+                    return (
+                      <TestimonialsEditor testimonials={items}
+                        testimonialsTitle={t}
+                        onChange={(v) => updateInstanceData(inst, { items: v, title: t })}
+                        onTitleChange={(title) => updateInstanceData(inst, { items, title })} />
+                    );
+                  })()}
                   {inst.key === 'cta' && <CtaEditor cta={data} onChange={(v) => updateInstanceData(inst, v)} />}
                   {inst.key === 'footer' && (
                     <FooterEditor companyName={data.companyName ?? ''} copyrightText={data.copyrightText ?? ''}

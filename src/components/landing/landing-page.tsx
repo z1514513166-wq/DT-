@@ -45,10 +45,22 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
     return mainMap[key] || null;
   };
 
-  // 根据 instance 获取实际数据：优先取 sectionData，否则取主数据
+  // 根据 instance 获取实际数据
   const getData = (inst: SectionInstance) => {
-    if (sectionData[inst.id]) return sectionData[inst.id];
+    const sd = sectionData[inst.id];
+    if (sd) {
+      // 列表类型返回 items 数组
+      if (inst.key === 'features' || inst.key === 'testimonials') return sd.items || [];
+      return sd;
+    }
     return getMainData(inst.key);
+  };
+
+  // 获取实例标题
+  const getInstanceTitle = (inst: SectionInstance): string | undefined => {
+    const sd = sectionData[inst.id];
+    if (sd?.title !== undefined) return sd.title;
+    return undefined;
   };
 
   const aboutDefaults = {
@@ -68,7 +80,7 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
           <ProductCarousel
             key={inst.id}
             features={data}
-            title={sectionData[inst.id]?.featuresTitle ?? content.featuresTitle}
+            title={getInstanceTitle(inst) ?? content.featuresTitle}
             primaryColor={branding.primaryColor}
             slug={slug}
           />
@@ -80,7 +92,7 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
           <TestimonialsSection
             key={inst.id}
             testimonials={data}
-            title={sectionData[inst.id]?.testimonialsTitle ?? content.testimonialsTitle}
+            title={getInstanceTitle(inst) ?? content.testimonialsTitle}
             primaryColor={branding.primaryColor}
           />
         );
