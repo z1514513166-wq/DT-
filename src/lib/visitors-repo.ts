@@ -69,9 +69,9 @@ export function getStatsForPage(pageId: number, period?: string): PageStats {
   };
 }
 
-export function getDashboardStats(period?: string): DashboardStats {
+export function getDashboardStats(period?: string, startDate?: string, endDate?: string): DashboardStats {
   const db = getDb();
-  const dateFilter = getDateFilter(period);
+  const dateFilter = getDateFilter(period, startDate, endDate);
 
   const pagesRow = db
     .prepare('SELECT COUNT(*) as count FROM landing_pages')
@@ -86,9 +86,11 @@ export function getDashboardStats(period?: string): DashboardStats {
     .get() as any;
 
   const todayVisitorsRow = db
-    .prepare(
-      "SELECT COUNT(*) as count FROM visitor_logs WHERE date(visited_at) = date('now')"
-    )
+    .prepare("SELECT COUNT(*) as count FROM visitor_logs WHERE date(visited_at) = date('now')")
+    .get() as any;
+
+  const yesterdayVisitorsRow = db
+    .prepare("SELECT COUNT(*) as count FROM visitor_logs WHERE date(visited_at) = date('now', '-1 day')")
     .get() as any;
 
   // 按时间段统计每个页面的访问量
@@ -102,22 +104,28 @@ export function getDashboardStats(period?: string): DashboardStats {
     .all() as any[];
 
   // 按天统计（用于图表）
-  const dailyStats = getDailyStats(db, period);
+  const dailyStats = getDailyStats(db, period, startDate, endDate);
 
   return {
     totalPages: pagesRow.count,
     totalVisitors: totalVisitorsRow.count,
     todayVisitors: todayVisitorsRow.count,
+    yesterdayVisitors: yesterdayVisitorsRow.count,
     periodVisitors: periodVisitorsRow.count,
     pagesWithCounts,
     dailyStats,
   };
 }
 
-function getDateFilter(period?: string): string {
+function getDateFilter(period?: string, startDate?: string, endDate?: string): string {
+  if (period === 'custom' && startDate && endDate) {
+    return `WHERE date(visited_at) >= date('${startDate}') AND date(visited_at) <= date('${endDate}')`;
+  }
   switch (period) {
     case 'today':
       return "WHERE date(visited_at) = date('now')";
+    case 'yesterday':
+      return "WHERE date(visited_at) = date('now', '-1 day')";
     case '7d':
       return "WHERE visited_at >= datetime('now', '-7 days')";
     case '30d':
@@ -131,10 +139,27 @@ function getDateFilter(period?: string): string {
   }
 }
 
-function getDailyStats(db: any, period?: string): { date: string; count: number }[] {
+function getDailyStats(db: any, period?: string, startDate?: string, endDate?: string): { date: string; count: number }[] {
   let days = 7;
+
+  if (period === 'custom' && startDate && endDate) {
+    const s = new Date(startDate);
+    const e = new Date(endDate);
+    days = Math.min(Math.ceil((e.getTime() - s.getTime()) / 86400000) + 1, 90);
+    const rows: { date: string; count: number }[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(e);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const row = db.prepare("SELECT COUNT(*) as count FROM visitor_logs WHERE date(visited_at) = ?").get(dateStr) as any;
+      rows.push({ date: `${d.getMonth() + 1}/${d.getDate()}`, count: row.count });
+    }
+    return rows;
+  }
+
   if (period === '30d' || period === 'lastMonth') days = 30;
   if (period === 'thisMonth') days = new Date().getDate();
+  if (period === 'today' || period === 'yesterday') days = 1;
 
   const rows: { date: string; count: number }[] = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -146,10 +171,7 @@ function getDailyStats(db: any, period?: string): { date: string; count: number 
       .get(`-${i}`) as any;
     const d = new Date();
     d.setDate(d.getDate() - i);
-    rows.push({
-      date: `${d.getMonth() + 1}/${d.getDate()}`,
-      count: row.count,
-    });
+    rows.push({ date: `${d.getMonth() + 1}/${d.getDate()}`, count: row.count });
   }
   return rows;
 }

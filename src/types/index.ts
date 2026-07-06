@@ -132,6 +132,7 @@ export interface DashboardStats {
   totalPages: number;
   totalVisitors: number;
   todayVisitors: number;
+  yesterdayVisitors?: number;
   periodVisitors?: number;
   pagesWithCounts: { id: number; title: string; slug: string; visitor_count: number }[];
   dailyStats?: { date: string; count: number }[];

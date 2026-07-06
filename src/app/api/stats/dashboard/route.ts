@@ -7,7 +7,9 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || undefined;
-    const stats = getDashboardStats(period);
+    const start = searchParams.get('start') || undefined;
+    const end = searchParams.get('end') || undefined;
+    const stats = getDashboardStats(period, start, end);
     return NextResponse.json(stats);
   } catch (error) {
     console.error('GET /api/stats/dashboard error:', error);
