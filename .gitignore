@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# user content — don't include in git
+data/
+public/uploads/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
