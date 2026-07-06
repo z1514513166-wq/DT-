@@ -6,6 +6,7 @@ import Input from '@/components/ui/input';
 import { Textarea } from '@/components/ui/input';
 import Button from '@/components/ui/button';
 import TextStylePicker from './text-style-picker';
+import ThumbnailPreview from './thumbnail-preview';
 
 interface TestimonialsEditorProps {
   testimonials: Testimonial[];
@@ -80,11 +81,7 @@ function TestimonialItem({ item, onUpdate, onRemove }: {
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1">展示图片</label>
         {item.image && (
-          <div className="relative rounded-lg overflow-hidden border border-gray-600 mb-2">
-            <img src={item.image} alt="" className="w-full h-32 object-cover" />
-            <button onClick={() => onUpdate({ field: 'image', value: '' })}
-              className="absolute top-1 right-1 bg-red-600/80 text-white text-xs px-1.5 py-0.5 rounded">移除</button>
-          </div>
+          <ThumbnailPreview src={item.image} alt="" onRemove={() => onUpdate({ field: 'image', value: '' })} className="mb-2" />
         )}
         <input ref={fileRef} type="file" accept="image/*"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} className="hidden" />

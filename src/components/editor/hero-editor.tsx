@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/input';
 import Button from '@/components/ui/button';
 import { LandingPageContent, TextStyle } from '@/types';
 import TextStylePicker from './text-style-picker';
+import ThumbnailPreview from './thumbnail-preview';
 
 interface HeroEditorProps {
   hero: LandingPageContent['hero'];
@@ -67,10 +68,7 @@ export default function HeroEditor({ hero, onChange }: HeroEditorProps) {
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">背景图片</label>
           {hero.backgroundImage && (
-            <div className="relative rounded-lg overflow-hidden border border-gray-600 h-32">
-              <img src={hero.backgroundImage} alt="背景预览" className="w-full h-full object-cover" />
-              <button onClick={() => update('backgroundImage', '')} className="absolute top-2 right-2 bg-red-600/80 hover:bg-red-600 text-white text-xs px-2 py-1 rounded">移除</button>
-            </div>
+            <ThumbnailPreview src={hero.backgroundImage} alt="背景预览" onRemove={() => update('backgroundImage', '')} className="mb-2" />
           )}
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" id="bg-image-upload" />
           <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>

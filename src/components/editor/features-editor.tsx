@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/input';
 import Button from '@/components/ui/button';
 import { TextStyle } from '@/types';
 import TextStylePicker from './text-style-picker';
+import ThumbnailPreview from './thumbnail-preview';
 
 interface FeaturesEditorProps {
   features: Feature[];
@@ -151,13 +152,7 @@ function ProductEditor({
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1">产品图片</label>
         {feature.image && (
-          <div className="relative rounded-lg overflow-hidden border border-gray-600 h-32 mb-2">
-            <img src={feature.image} alt="" className="w-full h-full object-cover" />
-            <button
-              onClick={() => set('image', '')}
-              className="absolute top-1 right-1 bg-red-600/80 text-white text-xs px-1.5 py-0.5 rounded"
-            >移除</button>
-          </div>
+          <ThumbnailPreview src={feature.image} alt="" onRemove={() => set('image', '')} className="mb-2" />
         )}
         <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
         <Button variant="secondary" size="sm" onClick={() => fileRef.current?.click()} disabled={uploading}>

@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/input';
 import Button from '@/components/ui/button';
 import { TextStyle } from '@/types';
 import TextStylePicker from './text-style-picker';
+import ThumbnailPreview from './thumbnail-preview';
 
 interface AboutEditorProps {
   avatarUrl: string | null;
@@ -56,10 +57,7 @@ export default function AboutEditor({
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1">头像 / Logo</label>
         {avatarUrl && (
-          <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gray-600 mb-2">
-            <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
-            <button onClick={() => set('avatarUrl', null)} className="absolute inset-0 bg-black/60 text-white text-xs flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">移除</button>
-          </div>
+          <ThumbnailPreview src={avatarUrl} alt="头像" onRemove={() => set('avatarUrl', null)} className="mb-2 rounded-full overflow-hidden [&_img]:rounded-full" />
         )}
         <input ref={avatarRef} type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f, 'avatarUrl', setUploadingAvatar); }} className="hidden" />
         <Button variant="secondary" size="sm" onClick={() => avatarRef.current?.click()} disabled={uploadingAvatar}>
@@ -70,10 +68,7 @@ export default function AboutEditor({
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1">背景图片</label>
         {backgroundImage && (
-          <div className="relative rounded-lg overflow-hidden border border-gray-600 h-24 mb-2">
-            <img src={backgroundImage} alt="" className="w-full h-full object-cover" />
-            <button onClick={() => set('backgroundImage', null)} className="absolute top-1 right-1 bg-red-600/80 text-white text-xs px-1.5 py-0.5 rounded">移除</button>
-          </div>
+          <ThumbnailPreview src={backgroundImage} alt="背景" onRemove={() => set('backgroundImage', null)} className="mb-2" />
         )}
         <input ref={bgRef} type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f, 'backgroundImage', setUploadingBg); }} className="hidden" />
         <Button variant="secondary" size="sm" onClick={() => bgRef.current?.click()} disabled={uploadingBg}>
