@@ -2,6 +2,7 @@
 
 import { LandingPageContent } from '@/types';
 import { applyTextStyle } from '@/lib/text-styles';
+import ScrollHint from './scroll-hint';
 
 interface HeroSectionProps {
   data: LandingPageContent['hero'];
@@ -28,6 +29,7 @@ export default function HeroSection({ data, primaryColor }: HeroSectionProps) {
           {data.subheadline}
         </p>
       </div>
+      <ScrollHint />
     </section>
   );
 }
