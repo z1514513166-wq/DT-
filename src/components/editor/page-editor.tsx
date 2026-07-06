@@ -232,18 +232,21 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
           const isOver = dragOverId === inst.id;
           return (
             <div key={inst.id}
-              draggable
-              onDragStart={() => handleDragStart(inst.id)}
               onDragOver={(e) => handleDragOver(e, inst.id)}
               onDragLeave={handleDragLeave}
               onDrop={() => handleDrop(inst.id)}
-              onDragEnd={handleDragEnd}
-              className={`bg-gray-900 border rounded-xl overflow-hidden transition-all cursor-default
+              className={`bg-gray-900 border rounded-xl overflow-hidden transition-all
                 ${isDragging ? 'opacity-40 scale-95' : ''}
                 ${isOver ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800'}`}
             >
               <div className="flex items-center">
-                <div className="ml-3 mr-1 cursor-grab active:cursor-grabbing text-gray-600 hover:text-gray-300 text-lg select-none px-0.5" title="拖拽排序">
+                <div
+                  draggable
+                  onDragStart={() => handleDragStart(inst.id)}
+                  onDragEnd={handleDragEnd}
+                  className="ml-3 mr-1 cursor-grab active:cursor-grabbing text-gray-600 hover:text-gray-300 text-lg select-none px-0.5"
+                  title="拖拽排序"
+                >
                   ⠿
                 </div>
                 <button onClick={() => toggleSection(inst.id)}
