@@ -10,6 +10,7 @@ import CtaSection from './cta-section';
 import FooterSection from './footer-section';
 import FloatingWhatsApp from './floating-whatsapp';
 import FacebookPixel from './facebook-pixel';
+import ScrollHint from './scroll-hint';
 import VisitTracker from './visit-tracker';
 
 interface LandingPageProps {
@@ -112,6 +113,8 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
   return (
     <div className="min-h-screen" style={{ fontFamily: branding.fontFamily }}>
       {order.map(renderSection)}
+
+      <ScrollHint />
 
       <FloatingWhatsApp link={whatsapp.link} enabled={whatsapp.enabled} />
       <FacebookPixel pixelId={facebookPixel.pixelId} enabled={facebookPixel.enabled} />
