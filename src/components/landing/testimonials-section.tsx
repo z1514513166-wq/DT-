@@ -1,17 +1,17 @@
 'use client';
 
-import { Testimonial } from '@/types';
+import { Testimonial, TextStyle } from '@/types';
+import { applyTextStyle } from '@/lib/text-styles';
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
   title?: string;
+  titleStyle?: TextStyle;
   primaryColor: string;
 }
 
 export default function TestimonialsSection({
-  testimonials,
-  title,
-  primaryColor,
+  testimonials, title, titleStyle, primaryColor,
 }: TestimonialsSectionProps) {
   if (testimonials.length === 0) return null;
 
@@ -19,7 +19,7 @@ export default function TestimonialsSection({
     <section className="py-20 px-4 bg-gray-900">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className={`text-white mb-4 ${applyTextStyle(titleStyle) || 'text-3xl md:text-4xl font-bold'}`}>
             {title || 'What Our Customers Say'}
           </h2>
           <div

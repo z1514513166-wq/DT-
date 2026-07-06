@@ -1,6 +1,7 @@
 'use client';
 
 import { LandingPageContent } from '@/types';
+import { applyTextStyle } from '@/lib/text-styles';
 
 interface CtaSectionProps {
   data: LandingPageContent['cta'];
@@ -8,16 +9,14 @@ interface CtaSectionProps {
 }
 
 export default function CtaSection({ data, primaryColor }: CtaSectionProps) {
+  const headlineCls = applyTextStyle(data.headlineStyle) || 'text-3xl md:text-4xl font-bold';
+  const subCls = applyTextStyle(data.subheadlineStyle) || 'text-lg';
+
   return (
-    <section
-      className="py-20 px-4 text-center"
-      style={{ backgroundColor: data.backgroundColor }}
-    >
+    <section className="py-20 px-4 text-center" style={{ backgroundColor: data.backgroundColor }}>
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          {data.headline}
-        </h2>
-        <p className="text-lg text-gray-300">{data.subheadline}</p>
+        <h2 className={`text-white mb-4 ${headlineCls}`}>{data.headline}</h2>
+        <p className={`text-gray-300 ${subCls}`}>{data.subheadline}</p>
       </div>
     </section>
   );

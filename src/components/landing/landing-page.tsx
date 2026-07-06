@@ -63,6 +63,15 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
     return undefined;
   };
 
+  // 获取实例标题样式
+  const getInstanceTitleStyle = (inst: SectionInstance) => {
+    const sd = sectionData[inst.id];
+    if (sd?.titleStyle) return sd.titleStyle;
+    if (inst.key === 'features') return content.featuresTitleStyle;
+    if (inst.key === 'testimonials') return content.testimonialsTitleStyle;
+    return undefined;
+  };
+
   const aboutDefaults = {
     avatarUrl: null, companyName: '', description: '',
     backgroundColor: '#0a0a0a', backgroundImage: null,
@@ -81,6 +90,7 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
             key={inst.id}
             features={data}
             title={getInstanceTitle(inst) ?? content.featuresTitle}
+            titleStyle={getInstanceTitleStyle(inst)}
             primaryColor={branding.primaryColor}
             slug={slug}
           />
@@ -93,6 +103,7 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
             key={inst.id}
             testimonials={data}
             title={getInstanceTitle(inst) ?? content.testimonialsTitle}
+            titleStyle={getInstanceTitleStyle(inst)}
             primaryColor={branding.primaryColor}
           />
         );

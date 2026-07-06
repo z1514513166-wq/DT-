@@ -1,11 +1,16 @@
 'use client';
 
+import { applyTextStyle } from '@/lib/text-styles';
+import { TextStyle } from '@/types';
+
 interface AboutData {
   avatarUrl: string | null;
   companyName: string;
   description: string;
   backgroundColor: string;
   backgroundImage: string | null;
+  titleStyle?: TextStyle;
+  bodyStyle?: TextStyle;
 }
 
 interface AboutSectionProps {
@@ -15,6 +20,8 @@ interface AboutSectionProps {
 
 export default function AboutSection({ data, primaryColor }: AboutSectionProps) {
   if (!data.companyName && !data.description) return null;
+  const titleCls = applyTextStyle(data.titleStyle) || 'text-2xl md:text-3xl font-bold';
+  const bodyCls = applyTextStyle(data.bodyStyle) || 'text-sm md:text-base';
 
   return (
     <section
@@ -51,17 +58,14 @@ export default function AboutSection({ data, primaryColor }: AboutSectionProps) 
 
           {/* Company Info */}
           <div className="flex-1 text-center md:text-left">
-            <h2
-              className="text-2xl md:text-3xl font-bold text-white mb-3"
-              style={{ color: primaryColor }}
-            >
+            <h2 className={`text-white mb-3 ${titleCls}`} style={{ color: primaryColor }}>
               {data.companyName}
             </h2>
             <div
               className="w-12 h-0.5 mb-4 mx-auto md:mx-0 rounded-full"
               style={{ backgroundColor: primaryColor }}
             />
-            <p className="text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+            <p className={`text-gray-300 leading-relaxed whitespace-pre-wrap ${bodyCls}`}>
               {data.description}
             </p>
           </div>

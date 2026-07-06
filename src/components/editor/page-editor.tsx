@@ -296,11 +296,15 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
                   {inst.key === 'features' && (() => {
                     const items = Array.isArray(data) ? data : content.features;
                     const t = getInstanceTitle(inst);
+                    const sd = sectionData[inst.id];
+                    const titleStyle = sd?.titleStyle || content.featuresTitleStyle;
                     return (
                       <FeaturesEditor features={items}
                         featuresTitle={t}
-                        onChange={(v) => updateInstanceData(inst, { items: v, title: t })}
-                        onTitleChange={(title) => updateInstanceData(inst, { items, title })} />
+                        featuresTitleStyle={titleStyle}
+                        onChange={(v) => updateInstanceData(inst, { ...sd, items: v, title: t })}
+                        onTitleChange={(title) => updateInstanceData(inst, { ...sd, items, title })}
+                        onTitleStyleChange={(style) => updateInstanceData(inst, { ...sd, items, title: t, titleStyle: style })} />
                     );
                   })()}
                   {inst.key === 'about' && (
@@ -312,11 +316,15 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
                   {inst.key === 'testimonials' && (() => {
                     const items = Array.isArray(data) ? data : content.testimonials;
                     const t = getInstanceTitle(inst);
+                    const sd = sectionData[inst.id];
+                    const titleStyle = sd?.titleStyle || content.testimonialsTitleStyle;
                     return (
                       <TestimonialsEditor testimonials={items}
                         testimonialsTitle={t}
-                        onChange={(v) => updateInstanceData(inst, { items: v, title: t })}
-                        onTitleChange={(title) => updateInstanceData(inst, { items, title })} />
+                        testimonialsTitleStyle={titleStyle}
+                        onChange={(v) => updateInstanceData(inst, { ...sd, items: v, title: t })}
+                        onTitleChange={(title) => updateInstanceData(inst, { ...sd, items, title })}
+                        onTitleStyleChange={(style) => updateInstanceData(inst, { ...sd, items, title: t, titleStyle: style })} />
                     );
                   })()}
                   {inst.key === 'cta' && <CtaEditor cta={data} onChange={(v) => updateInstanceData(inst, v)} />}

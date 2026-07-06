@@ -5,19 +5,25 @@ import { Feature } from '@/types';
 import Input from '@/components/ui/input';
 import { Textarea } from '@/components/ui/input';
 import Button from '@/components/ui/button';
+import { TextStyle } from '@/types';
+import TextStylePicker from './text-style-picker';
 
 interface FeaturesEditorProps {
   features: Feature[];
   featuresTitle?: string;
+  featuresTitleStyle?: TextStyle;
   onChange: (features: Feature[]) => void;
   onTitleChange: (title: string) => void;
+  onTitleStyleChange?: (style: TextStyle) => void;
 }
 
 export default function FeaturesEditor({
   features,
   featuresTitle,
+  featuresTitleStyle,
   onChange,
   onTitleChange,
+  onTitleStyleChange,
 }: FeaturesEditorProps) {
   const addFeature = () => {
     const newFeature: Feature = {
@@ -60,12 +66,14 @@ export default function FeaturesEditor({
         </Button>
       </div>
 
-      <Input
-        label="区块标题"
-        value={featuresTitle ?? '核心特性'}
-        onChange={(e) => onTitleChange(e.target.value)}
-        placeholder="核心特性"
-      />
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <label className="text-sm font-medium text-gray-300">区块标题</label>
+          <TextStylePicker value={featuresTitleStyle} onChange={(v) => onTitleStyleChange?.(v)} />
+        </div>
+        <input className="w-full rounded-lg border bg-gray-800 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-600"
+          value={featuresTitle ?? '核心特性'} onChange={(e) => onTitleChange(e.target.value)} placeholder="核心特性" />
+      </div>
 
       {features.length === 0 && (
         <p className="text-gray-500 text-sm">暂无产品，点击上方按钮添加。</p>

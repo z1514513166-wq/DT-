@@ -28,6 +28,12 @@ export interface SectionInstance {
   key: string; // 'hero' | 'features' | 'about' | 'testimonials' | 'cta' | 'footer'
 }
 
+// 文字样式
+export interface TextStyle {
+  size?: string;   // e.g. 'small' | 'base' | 'large' | 'xl' | '2xl'
+  bold?: boolean;
+}
+
 export interface LandingPageContent {
   hero: {
     headline: string;
@@ -36,23 +42,30 @@ export interface LandingPageContent {
     ctaLink: string;
     backgroundImage: string | null;
     backgroundColor: string;
+    headlineStyle?: TextStyle;
+    subheadlineStyle?: TextStyle;
   };
   features: Feature[];
   featuresTitle?: string;
+  featuresTitleStyle?: TextStyle;
   testimonials: Testimonial[];
   testimonialsTitle?: string;
+  testimonialsTitleStyle?: TextStyle;
   cta: {
     headline: string;
     subheadline: string;
     buttonText: string;
     buttonLink: string;
     backgroundColor: string;
+    headlineStyle?: TextStyle;
+    subheadlineStyle?: TextStyle;
   };
   footer: {
     companyName: string;
     copyrightText: string;
     links: FooterLink[];
     backgroundColor: string;
+    companyNameStyle?: TextStyle;
   };
   whatsapp: {
     link: string;
@@ -68,6 +81,8 @@ export interface LandingPageContent {
     description: string;
     backgroundColor: string;
     backgroundImage: string | null;
+    titleStyle?: TextStyle;
+    bodyStyle?: TextStyle;
   };
   branding: {
     primaryColor: string;

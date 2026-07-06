@@ -2,16 +2,19 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { Feature } from '@/types';
+import { Feature, TextStyle } from '@/types';
+import { applyTextStyle } from '@/lib/text-styles';
 
 export default function ProductCarousel({
   features,
   title,
+  titleStyle,
   primaryColor,
   slug,
 }: {
   features: Feature[];
   title?: string;
+  titleStyle?: TextStyle;
   primaryColor: string;
   slug: string;
 }) {
@@ -98,7 +101,7 @@ export default function ProductCarousel({
       <div className="max-w-5xl mx-auto">
         {/* Title */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
+          <h2 className={`text-white mb-3 ${applyTextStyle(titleStyle) || 'text-2xl md:text-4xl font-bold'}`}>
             {title || 'Core Features'}
           </h2>
           <div
