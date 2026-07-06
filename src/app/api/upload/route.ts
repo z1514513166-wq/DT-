@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
     const ext = file.name.split('.').pop() || 'jpg';
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    // 使用 data/uploads/ 目录（Railway Volume 持久化）
+    const uploadsDir = path.join(process.cwd(), 'data', 'uploads');
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true });
     }
@@ -36,7 +37,8 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(uploadsDir, filename);
     await writeFile(filePath, buffer);
 
-    const url = `/uploads/${filename}`;
+    // 通过 API 提供图片访问（兼容 Railway 持久化）
+    const url = `/api/uploads/${filename}`;
     return NextResponse.json({ url, filename }, { status: 201 });
   } catch (error) {
     console.error('Upload error:', error);
