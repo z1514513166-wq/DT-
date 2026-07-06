@@ -46,7 +46,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       </header>
 
       <section className="max-w-5xl mx-auto px-4 pt-8 pb-4">
-        <div className="rounded-2xl overflow-hidden aspect-[16/9] bg-gray-900 border border-gray-800">
+        <div className="rounded-2xl overflow-hidden aspect-[4/5] bg-gray-900 border border-gray-800">
           {product.image ? (
             <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
           ) : (
