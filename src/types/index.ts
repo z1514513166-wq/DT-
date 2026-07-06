@@ -16,6 +16,7 @@ export interface Testimonial {
   role: string;
   quote: string;
   avatarUrl: string | null;
+  image: string;  // 评价展示图片
 }
 
 export interface FooterLink {

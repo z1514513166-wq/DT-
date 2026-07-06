@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef } from 'react';
 import { Testimonial, TextStyle } from '@/types';
 import Input from '@/components/ui/input';
 import { Textarea } from '@/components/ui/input';
@@ -19,7 +20,7 @@ export default function TestimonialsEditor({
   testimonials, testimonialsTitle, testimonialsTitleStyle,
   onChange, onTitleChange, onTitleStyleChange,
 }: TestimonialsEditorProps) {
-  const add = () => onChange([...testimonials, { id: crypto.randomUUID(), name: '', role: '', quote: '', avatarUrl: null }]);
+  const add = () => onChange([...testimonials, { id: crypto.randomUUID(), name: '', role: '', quote: '', avatarUrl: null, image: '' }]);
   const remove = (id: string) => onChange(testimonials.filter((t) => t.id !== id));
   const update = (id: string, field: keyof Testimonial, value: string) => onChange(testimonials.map((t) => (t.id === id ? { ...t, [field]: value } : t)));
 
@@ -42,16 +43,61 @@ export default function TestimonialsEditor({
       {testimonials.length === 0 && <p className="text-gray-500 text-sm">暂无用户评价。</p>}
 
       {testimonials.map((t) => (
-        <div key={t.id} className="border border-gray-700 rounded-lg p-4 space-y-3">
-          <div className="flex justify-end"><Button variant="ghost" size="sm" onClick={() => remove(t.id)}>🗑️</Button></div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="姓名" value={t.name} onChange={(e) => update(t.id, 'name', e.target.value)} placeholder="张三" />
-            <Input label="职位 / 头衔" value={t.role} onChange={(e) => update(t.id, 'role', e.target.value)} placeholder="XX公司 CEO" />
-          </div>
-          <Textarea label="评价内容" value={t.quote} onChange={(e) => update(t.id, 'quote', e.target.value)} placeholder="这个产品真的很棒..." rows={3} />
-          <Input label="头像链接（选填）" value={t.avatarUrl || ''} onChange={(e) => update(t.id, 'avatarUrl', e.target.value)} placeholder="https://example.com/avatar.jpg" />
-        </div>
+        <TestimonialItem key={t.id} item={t} onUpdate={(f) => update(t.id, f.field, f.value)} onRemove={() => remove(t.id)} />
       ))}
+    </div>
+  );
+}
+
+function TestimonialItem({ item, onUpdate, onRemove }: {
+  item: Testimonial;
+  onUpdate: (v: { field: keyof Testimonial; value: string }) => void;
+  onRemove: () => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const uploadImage = async (file: File) => {
+    setUploading(true);
+    try {
+      const fd = new FormData(); fd.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      if (res.ok) {
+        const data = await res.json();
+        onUpdate({ field: 'image', value: data.url });
+      }
+    } catch { /* ignore */ }
+    finally { setUploading(false); }
+  };
+
+  return (
+    <div className="border border-gray-700 rounded-lg p-4 space-y-3">
+      <div className="flex justify-end">
+        <Button variant="ghost" size="sm" onClick={onRemove}>🗑️</Button>
+      </div>
+
+      {/* 展示图片 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-1">展示图片</label>
+        {item.image && (
+          <div className="relative rounded-lg overflow-hidden border border-gray-600 mb-2">
+            <img src={item.image} alt="" className="w-full h-32 object-cover" />
+            <button onClick={() => onUpdate({ field: 'image', value: '' })}
+              className="absolute top-1 right-1 bg-red-600/80 text-white text-xs px-1.5 py-0.5 rounded">移除</button>
+          </div>
+        )}
+        <input ref={fileRef} type="file" accept="image/*"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} className="hidden" />
+        <Button variant="secondary" size="sm" onClick={() => fileRef.current?.click()} disabled={uploading}>
+          {uploading ? '上传中...' : item.image ? '更换图片' : '📷 上传图片'}
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Input label="姓名" value={item.name} onChange={(e) => onUpdate({ field: 'name', value: e.target.value })} placeholder="张三" />
+        <Input label="职位 / 头衔" value={item.role} onChange={(e) => onUpdate({ field: 'role', value: e.target.value })} placeholder="XX公司 CEO" />
+      </div>
+      <Textarea label="评语（可选）" value={item.quote} onChange={(e) => onUpdate({ field: 'quote', value: e.target.value })} rows={2} />
     </div>
   );
 }

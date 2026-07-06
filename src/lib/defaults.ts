@@ -49,6 +49,7 @@ export function getDefaultContent(): LandingPageContent {
         quote:
           'This product completely transformed our workflow. Team efficiency improved by 40% in the first month.',
         avatarUrl: null,
+        image: '',
       },
       {
         id: nextId(),
@@ -57,6 +58,7 @@ export function getDefaultContent(): LandingPageContent {
         quote:
           'The analytics alone is worth the price. We can now confidently make data-driven decisions.',
         avatarUrl: null,
+        image: '',
       },
       {
         id: nextId(),
@@ -65,6 +67,7 @@ export function getDefaultContent(): LandingPageContent {
         quote:
           'Simple, powerful, and affordable. I recommend it to all my clients.',
         avatarUrl: null,
+        image: '',
       },
     ],
     testimonialsTitle: 'What Our Customers Say',
