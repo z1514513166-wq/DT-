@@ -362,6 +362,22 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
         ))}
       </div>
 
+      {/* 添加板块面板 */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-8">
+        <p className="text-xs text-gray-500 mb-3">➕ 添加板块到页面</p>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(labelMap).map(([key, { label, icon }]) => (
+            <button
+              key={key}
+              onClick={() => addSection(key)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 text-gray-300 text-xs hover:border-gray-500 hover:text-white transition-colors"
+            >
+              <span>{icon}</span> {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* 保存 */}
       <div className="flex items-center justify-end gap-3 border-t border-gray-800 pt-6">
         <Button variant="ghost" onClick={() => router.push('/admin/pages')}>取消</Button>
