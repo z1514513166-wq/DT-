@@ -4,14 +4,26 @@ interface StatsCardsProps {
   totalPages: number;
   totalVisitors: number;
   todayVisitors: number;
+  periodVisitors?: number;
+  period?: string;
 }
 
-export default function StatsCards({ totalPages, totalVisitors, todayVisitors }: StatsCardsProps) {
+const PERIOD_LABELS: Record<string, string> = {
+  today: '今日',
+  '7d': '7天',
+  '30d': '30天',
+  thisMonth: '本月',
+  lastMonth: '上月',
+};
+
+export default function StatsCards({ totalPages, totalVisitors, todayVisitors, periodVisitors, period }: StatsCardsProps) {
+  const periodLabel = PERIOD_LABELS[period || ''] || '总';
+
   const cards = [
     { label: '页面总数', value: totalPages, icon: '📄', color: 'from-blue-600 to-blue-800' },
     { label: '总访问量', value: totalVisitors, icon: '👥', color: 'from-green-600 to-green-800' },
     { label: '今日访问', value: todayVisitors, icon: '📈', color: 'from-purple-600 to-purple-800' },
-    { label: '平均访问', value: totalPages > 0 ? Math.round(totalVisitors / totalPages) : 0, icon: '📊', color: 'from-orange-600 to-orange-800' },
+    { label: `${periodLabel}访问`, value: periodVisitors ?? totalVisitors, icon: '📊', color: 'from-orange-600 to-orange-800' },
   ];
 
   return (

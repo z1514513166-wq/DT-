@@ -12,8 +12,6 @@ export function trackVisit(
   referer: string | null
 ): void {
   const db = getDb();
-
-  // 同一 IP 同一天访问同一页面只算一次
   if (ipAddress) {
     const existing = db
       .prepare(
@@ -24,18 +22,25 @@ export function trackVisit(
       .get(landingPageId, ipAddress) as any;
     if (existing) return;
   }
-
   db.prepare(
     `INSERT INTO visitor_logs (landing_page_id, ip_address, user_agent, referer)
      VALUES (?, ?, ?, ?)`
   ).run(landingPageId, ipAddress, userAgent, referer);
 }
 
-export function getStatsForPage(pageId: number): PageStats {
+export function getStatsForPage(pageId: number, period?: string): PageStats {
   const db = getDb();
+  const dateFilter = getDateFilter(period);
 
   const totalRow = db
     .prepare('SELECT COUNT(*) as count FROM visitor_logs WHERE landing_page_id = ?')
+    .get(pageId) as any;
+
+  const periodRow = db
+    .prepare(
+      `SELECT COUNT(*) as count FROM visitor_logs
+       WHERE landing_page_id = ? ${dateFilter}`
+    )
     .get(pageId) as any;
 
   const todayRow = db
@@ -56,23 +61,17 @@ export function getStatsForPage(pageId: number): PageStats {
     last7Days.push(row.count);
   }
 
-  const last30Row = db
-    .prepare(
-      `SELECT COUNT(*) as count FROM visitor_logs
-       WHERE landing_page_id = ? AND visited_at >= datetime('now', '-30 days')`
-    )
-    .get(pageId) as any;
-
   return {
     total: totalRow.count,
     today: todayRow.count,
     last7Days,
-    last30Days: last30Row.count,
+    last30Days: periodRow.count,
   };
 }
 
-export function getDashboardStats(): DashboardStats {
+export function getDashboardStats(period?: string): DashboardStats {
   const db = getDb();
+  const dateFilter = getDateFilter(period);
 
   const pagesRow = db
     .prepare('SELECT COUNT(*) as count FROM landing_pages')
@@ -82,23 +81,75 @@ export function getDashboardStats(): DashboardStats {
     .prepare('SELECT COUNT(*) as count FROM visitor_logs')
     .get() as any;
 
+  const periodVisitorsRow = db
+    .prepare(`SELECT COUNT(*) as count FROM visitor_logs ${dateFilter}`)
+    .get() as any;
+
   const todayVisitorsRow = db
     .prepare(
       "SELECT COUNT(*) as count FROM visitor_logs WHERE date(visited_at) = date('now')"
     )
     .get() as any;
 
-  const pagesWithCounts = getAllPages().map((p) => ({
-    id: p.id,
-    title: p.title,
-    slug: p.slug,
-    visitor_count: p.visitor_count,
-  }));
+  // 按时间段统计每个页面的访问量
+  const pagesWithCounts = db
+    .prepare(
+      `SELECT p.id, p.title, p.slug,
+        (SELECT COUNT(*) FROM visitor_logs v WHERE v.landing_page_id = p.id ${dateFilter.replace(/WHERE/i, 'AND')}) AS visitor_count
+       FROM landing_pages p
+       ORDER BY visitor_count DESC`
+    )
+    .all() as any[];
+
+  // 按天统计（用于图表）
+  const dailyStats = getDailyStats(db, period);
 
   return {
     totalPages: pagesRow.count,
     totalVisitors: totalVisitorsRow.count,
     todayVisitors: todayVisitorsRow.count,
+    periodVisitors: periodVisitorsRow.count,
     pagesWithCounts,
+    dailyStats,
   };
+}
+
+function getDateFilter(period?: string): string {
+  switch (period) {
+    case 'today':
+      return "WHERE date(visited_at) = date('now')";
+    case '7d':
+      return "WHERE visited_at >= datetime('now', '-7 days')";
+    case '30d':
+      return "WHERE visited_at >= datetime('now', '-30 days')";
+    case 'thisMonth':
+      return "WHERE strftime('%Y-%m', visited_at) = strftime('%Y-%m', 'now')";
+    case 'lastMonth':
+      return "WHERE strftime('%Y-%m', visited_at) = strftime('%Y-%m', 'now', '-1 month')";
+    default:
+      return '';
+  }
+}
+
+function getDailyStats(db: any, period?: string): { date: string; count: number }[] {
+  let days = 7;
+  if (period === '30d' || period === 'lastMonth') days = 30;
+  if (period === 'thisMonth') days = new Date().getDate();
+
+  const rows: { date: string; count: number }[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const row = db
+      .prepare(
+        `SELECT COUNT(*) as count FROM visitor_logs
+         WHERE date(visited_at) = date('now', ? || ' days')`
+      )
+      .get(`-${i}`) as any;
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    rows.push({
+      date: `${d.getMonth() + 1}/${d.getDate()}`,
+      count: row.count,
+    });
+  }
+  return rows;
 }
