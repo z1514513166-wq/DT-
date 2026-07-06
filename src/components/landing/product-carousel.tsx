@@ -238,7 +238,7 @@ export default function ProductCarousel({
         {total > 0 && features[current]?.detail && (
           <div className="flex justify-center mt-4">
             <Link
-              href={`/lp/${slug}/product/${current}`}
+              href={`/lp/${slug}/product/${features[current]?.id}`}
               className="inline-block text-base md:text-lg font-semibold px-8 py-3 rounded-lg transition-all hover:scale-105 active:scale-95"
               style={{ backgroundColor: primaryColor, color: '#fff' }}
             >
