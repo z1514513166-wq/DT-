@@ -110,14 +110,7 @@ export function getDefaultContent(): LandingPageContent {
       fontFamily: 'Inter',
       logoUrl: null,
     },
-    sectionOrder: [
-      { id: 's1', key: 'hero' },
-      { id: 's2', key: 'features' },
-      { id: 's3', key: 'about' },
-      { id: 's4', key: 'testimonials' },
-      { id: 's5', key: 'cta' },
-      { id: 's6', key: 'footer' },
-    ],
+    sectionOrder: [],
     sectionData: {},
   };
 }

@@ -26,14 +26,7 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
     ? (typeof content.sectionOrder[0] === 'string'
         ? (content.sectionOrder as unknown as string[]).map((k, i) => ({ id: `old_${i}`, key: k }))
         : content.sectionOrder as SectionInstance[])
-    : [
-        { id: 's1', key: 'hero' },
-        { id: 's2', key: 'features' },
-        { id: 's3', key: 'about' },
-        { id: 's4', key: 'testimonials' },
-        { id: 's5', key: 'cta' },
-        { id: 's6', key: 'footer' },
-      ];
+    : [];
 
   const sectionData = content.sectionData || {};
 
