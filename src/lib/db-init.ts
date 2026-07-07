@@ -39,5 +39,7 @@ export function initDb(): void {
   initialized = true;
 }
 
-// Auto-initialize on first import
-initDb();
+// Auto-initialize on first import (skip during Next.js build)
+if (process.env.NEXT_PHASE !== 'phase-production-build') {
+  initDb();
+}

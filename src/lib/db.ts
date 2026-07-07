@@ -18,7 +18,9 @@ export function getDb(): Database.Database {
     db = new Database(DB_PATH);
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
-    db.pragma('busy_timeout = 5000');
+    db.pragma('busy_timeout = 10000');
+    db.pragma('synchronous = NORMAL');
+    db.pragma('wal_autocheckpoint = 1000');
   }
   return db;
 }
