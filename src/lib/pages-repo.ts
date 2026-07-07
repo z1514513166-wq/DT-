@@ -1,10 +1,6 @@
 import { getDb } from './db';
-import { initDb } from './db-init';
 import { LandingPage, LandingPageWithCount } from '@/types';
 import { getDefaultContent } from './defaults';
-
-// Ensure tables exist
-initDb();
 
 export function getAllPages(): LandingPageWithCount[] {
   const db = getDb();

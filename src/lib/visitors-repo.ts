@@ -1,9 +1,6 @@
 import { getDb } from './db';
-import { initDb } from './db-init';
 import { PageStats, DashboardStats } from '@/types';
 import { getAllPages } from './pages-repo';
-
-initDb();
 
 export function trackVisit(
   landingPageId: number,
