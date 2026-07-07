@@ -20,12 +20,10 @@ export default function TestimonialsSection({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const total = testimonials.length;
 
-  // touch swipe
   const touchStartX = useRef(0);
   const touchCurX = useRef(0);
   const swiping = useRef(false);
 
-  // auto-play
   useEffect(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (total <= 1) return;
@@ -37,7 +35,6 @@ export default function TestimonialsSection({
   }, [total]);
 
   const pause = useCallback(() => { pauseUntilRef.current = Date.now() + 5000; }, []);
-
   const prev = useCallback(() => { pause(); setCurrent((c) => ((c - 1) % total + total) % total); }, [total, pause]);
   const next = useCallback(() => { pause(); setCurrent((c) => (c + 1) % total); }, [total, pause]);
   const jump = useCallback((i: number) => { pause(); setCurrent(i); }, [pause]);
@@ -56,6 +53,8 @@ export default function TestimonialsSection({
 
   if (total === 0) return null;
 
+  const item = testimonials[current];
+
   return (
     <>
       <section className="py-20 px-4 bg-gray-900">
@@ -70,57 +69,31 @@ export default function TestimonialsSection({
           {/* Carousel */}
           <div
             className="relative overflow-hidden rounded-2xl bg-gray-800 border border-gray-700 select-none"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
             style={{ WebkitUserSelect: 'none', userSelect: 'none', touchAction: 'pan-y' }}
           >
             <div className="relative aspect-[4/5] md:aspect-[16/10]">
-              {testimonials.map((t, i) => (
-                <div
-                  key={t.id}
-                  className={`absolute inset-0 transition-opacity duration-500 flex items-center justify-center ${
-                    i === current ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-                  }`}
-                >
-                  {t.image ? (
-                    <img
-                      src={t.image}
-                      alt={t.name || 'Testimonial'}
-                      className="w-full h-full object-contain cursor-zoom-in bg-gray-900"
-                      onClick={() => setLightbox(t.image)}
-                      draggable={false}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-6xl text-gray-600 bg-gray-900">📷</div>
-                  )}
+              {item.image ? (
+                <img src={item.image} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(item.image)} draggable={false} />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-6xl text-gray-600 bg-gray-900">📷</div>
+              )}
 
-                  {/* Overlay info */}
-                  {(t.name || t.quote) && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-12 pb-4 px-6 pointer-events-none">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style={{ backgroundColor: primaryColor }}>
-                          {t.name ? t.name.charAt(0).toUpperCase() : '?'}
-                        </div>
-                        <div>
-                          {t.name && <p className="font-semibold text-white">{t.name}</p>}
-                          {t.role && <p className="text-xs text-gray-300">{t.role}</p>}
-                        </div>
-                      </div>
-                      {t.quote && <p className="text-gray-200 text-sm mt-2">&ldquo;{t.quote}&rdquo;</p>}
-                    </div>
-                  )}
+              {/* Caption bottom */}
+              {item.caption && (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent pt-12 pb-5 px-6">
+                  <p className="text-white text-sm md:text-base text-center font-medium">{item.caption}</p>
                 </div>
-              ))}
+              )}
             </div>
 
             {/* Arrows */}
             {total > 1 && (
               <>
-                <button onClick={prev} className="absolute left-0 top-0 w-[40%] md:w-1/4 h-full z-20" style={{ background: 'transparent', border: 'none', WebkitTapHighlightColor: 'transparent' }} aria-label="Previous">
+                <button onClick={prev} className="absolute left-0 top-0 w-[40%] md:w-1/4 h-full z-20" style={{ background: 'transparent', border: 'none', WebkitTapHighlightColor: 'transparent' }} aria-label="上一个">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-lg md:text-xl font-bold shadow-lg" style={{ pointerEvents: 'none' }}>‹</span>
                 </button>
-                <button onClick={next} className="absolute right-0 top-0 w-[40%] md:w-1/4 h-full z-20" style={{ background: 'transparent', border: 'none', WebkitTapHighlightColor: 'transparent' }} aria-label="Next">
+                <button onClick={next} className="absolute right-0 top-0 w-[40%] md:w-1/4 h-full z-20" style={{ background: 'transparent', border: 'none', WebkitTapHighlightColor: 'transparent' }} aria-label="下一个">
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-lg md:text-xl font-bold shadow-lg" style={{ pointerEvents: 'none' }}>›</span>
                 </button>
               </>
@@ -128,7 +101,7 @@ export default function TestimonialsSection({
 
             {/* Dots */}
             {total > 1 && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
                 {testimonials.map((_, i) => (
                   <button key={i} onClick={(e) => { e.stopPropagation(); jump(i); }}
                     className="w-6 h-6 flex items-center justify-center" style={{ background: 'transparent', border: 'none', WebkitTapHighlightColor: 'transparent' }}>

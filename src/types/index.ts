@@ -12,11 +12,8 @@ export interface Feature {
 
 export interface Testimonial {
   id: string;
-  name: string;
-  role: string;
-  quote: string;
-  avatarUrl: string | null;
-  image: string;  // 评价展示图片
+  image: string;
+  caption: string;
 }
 
 export interface FooterLink {

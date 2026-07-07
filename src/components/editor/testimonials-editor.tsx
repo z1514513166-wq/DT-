@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Testimonial, TextStyle } from '@/types';
 import Input from '@/components/ui/input';
-import { Textarea } from '@/components/ui/input';
 import Button from '@/components/ui/button';
 import TextStylePicker from './text-style-picker';
 import ThumbnailPreview from './thumbnail-preview';
@@ -21,15 +20,47 @@ export default function TestimonialsEditor({
   testimonials, testimonialsTitle, testimonialsTitleStyle,
   onChange, onTitleChange, onTitleStyleChange,
 }: TestimonialsEditorProps) {
-  const add = () => onChange([...testimonials, { id: crypto.randomUUID(), name: '', role: '', quote: '', avatarUrl: null, image: '' }]);
-  const remove = (id: string) => onChange(testimonials.filter((t) => t.id !== id));
-  const update = (id: string, field: keyof Testimonial, value: string) => onChange(testimonials.map((t) => (t.id === id ? { ...t, [field]: value } : t)));
+  const [uploading, setUploading] = useState(false);
+
+  const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+
+    const newItems: Testimonial[] = [...testimonials];
+    for (const file of Array.from(files)) {
+      try {
+        const fd = new FormData(); fd.append('file', file);
+        const res = await fetch('/api/upload', { method: 'POST', body: fd });
+        if (res.ok) {
+          const data = await res.json();
+          newItems.push({ id: crypto.randomUUID(), image: data.url, caption: '' });
+        }
+      } catch { /* skip */ }
+    }
+    onChange(newItems);
+    setUploading(false);
+    if (e.target) e.target.value = '';
+  };
+
+  const remove = (id: string) => onChange(testimonials.filter(t => t.id !== id));
+  const updateCaption = (id: string, caption: string) =>
+    onChange(testimonials.map(t => t.id === id ? { ...t, caption } : t));
+  const move = (id: string, dir: 'up' | 'down') => {
+    const idx = testimonials.findIndex(t => t.id === id);
+    if (idx === -1) return;
+    const newIdx = dir === 'up' ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= testimonials.length) return;
+    const arr = [...testimonials];
+    [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+    onChange(arr);
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-white">💬 用户评价</h3>
-        <Button variant="secondary" size="sm" onClick={add}>+ 添加评价</Button>
+        <span className="text-xs text-gray-500">{testimonials.length} 张图片</span>
       </div>
 
       <div>
@@ -38,63 +69,38 @@ export default function TestimonialsEditor({
           <TextStylePicker value={testimonialsTitleStyle} onChange={(v) => onTitleStyleChange?.(v)} />
         </div>
         <input className="w-full rounded-lg border bg-gray-800 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-600"
-          value={testimonialsTitle ?? '客户评价'} onChange={(e) => onTitleChange(e.target.value)} placeholder="客户评价" />
+          value={testimonialsTitle ?? ''} onChange={(e) => onTitleChange(e.target.value)} placeholder="客户评价" />
       </div>
 
-      {testimonials.length === 0 && <p className="text-gray-500 text-sm">暂无用户评价。</p>}
-
-      {testimonials.map((t) => (
-        <TestimonialItem key={t.id} item={t} onUpdate={(f) => update(t.id, f.field, f.value)} onRemove={() => remove(t.id)} />
-      ))}
-    </div>
-  );
-}
-
-function TestimonialItem({ item, onUpdate, onRemove }: {
-  item: Testimonial;
-  onUpdate: (v: { field: keyof Testimonial; value: string }) => void;
-  onRemove: () => void;
-}) {
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const uploadImage = async (file: File) => {
-    setUploading(true);
-    try {
-      const fd = new FormData(); fd.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      if (res.ok) {
-        const data = await res.json();
-        onUpdate({ field: 'image', value: data.url });
-      }
-    } catch { /* ignore */ }
-    finally { setUploading(false); }
-  };
-
-  return (
-    <div className="border border-gray-700 rounded-lg p-4 space-y-3">
-      <div className="flex justify-end">
-        <Button variant="ghost" size="sm" onClick={onRemove}>🗑️</Button>
+      {/* 批量上传 */}
+      <div className="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center hover:border-pink-500/50 transition-colors">
+        <input type="file" accept="image/*" multiple onChange={handleBulkUpload} className="hidden" id="bulk-upload" />
+        <label htmlFor="bulk-upload" className="cursor-pointer">
+          <div className="text-3xl mb-2">📁</div>
+          <p className="text-sm text-gray-300 font-medium">批量上传图片</p>
+          <p className="text-xs text-gray-500 mt-1">{uploading ? '上传中...' : '支持一次选择多张图片'}</p>
+        </label>
       </div>
 
-      {/* 展示图片 */}
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">展示图片</label>
-        {item.image && (
-          <ThumbnailPreview src={item.image} alt="" onRemove={() => onUpdate({ field: 'image', value: '' })} className="mb-2" />
-        )}
-        <input ref={fileRef} type="file" accept="image/*"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} className="hidden" />
-        <Button variant="secondary" size="sm" onClick={() => fileRef.current?.click()} disabled={uploading}>
-          {uploading ? '上传中...' : item.image ? '更换图片' : '📷 上传图片'}
-        </Button>
-      </div>
+      {/* 图片列表 */}
+      {testimonials.length === 0 && <p className="text-gray-500 text-sm text-center">暂无图片，请上传</p>}
 
-      <div className="grid grid-cols-2 gap-3">
-        <Input label="姓名" value={item.name} onChange={(e) => onUpdate({ field: 'name', value: e.target.value })} placeholder="张三" />
-        <Input label="职位 / 头衔" value={item.role} onChange={(e) => onUpdate({ field: 'role', value: e.target.value })} placeholder="XX公司 CEO" />
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+        {testimonials.map((t, idx) => (
+          <div key={t.id} className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+            <ThumbnailPreview src={t.image} alt="" onRemove={() => remove(t.id)} className="w-full [&_img]:w-full [&_img]:h-24 [&_img]:rounded-none [&_img]:object-cover" />
+            <div className="p-2 space-y-1.5">
+              <Input value={t.caption} onChange={(e) => updateCaption(t.id, e.target.value)} placeholder="文字" className="text-xs" />
+              <div className="flex gap-1">
+                <button onClick={() => move(t.id, 'up')} disabled={idx === 0}
+                  className="flex-1 text-[10px] text-gray-500 hover:text-white disabled:opacity-25 py-0.5 bg-gray-700 rounded">↑</button>
+                <button onClick={() => move(t.id, 'down')} disabled={idx === testimonials.length - 1}
+                  className="flex-1 text-[10px] text-gray-500 hover:text-white disabled:opacity-25 py-0.5 bg-gray-700 rounded">↓</button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-      <Textarea label="评语（可选）" value={item.quote} onChange={(e) => onUpdate({ field: 'quote', value: e.target.value })} rows={2} />
     </div>
   );
 }
