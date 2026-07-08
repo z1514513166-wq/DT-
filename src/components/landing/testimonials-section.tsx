@@ -74,9 +74,11 @@ export default function TestimonialsSection({
           >
             <div className="relative aspect-[4/5] md:aspect-[16/10]">
               {item.image ? (
-                <img src={item.image} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(item.image)} draggable={false} />
+                <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                  <img src={item.image} alt="" className="w-full h-full object-contain cursor-zoom-in" onClick={() => setLightbox(item.image)} draggable={false} />
+                </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-6xl text-gray-600 bg-gray-900">📷</div>
+                <div className="w-full h-full flex items-center justify-center text-6xl text-gray-600 bg-gray-700">📷</div>
               )}
 
               {/* Caption bottom */}
