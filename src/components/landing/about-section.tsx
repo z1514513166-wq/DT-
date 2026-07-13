@@ -20,54 +20,37 @@ interface AboutSectionProps {
 
 export default function AboutSection({ data, primaryColor }: AboutSectionProps) {
   if (!data.companyName && !data.description) return null;
-  const titleCls = applyTextStyle(data.titleStyle) || 'text-2xl md:text-3xl font-bold';
-  const bodyCls = applyTextStyle(data.bodyStyle) || 'text-sm md:text-base';
+  const titleCls = applyTextStyle(data.titleStyle) || 'text-xl md:text-2xl font-bold';
+  const bodyCls = applyTextStyle(data.bodyStyle) || 'text-xs md:text-sm';
 
   return (
     <section
-      className="relative py-10 md:py-20 px-4 overflow-hidden"
+      className="relative py-6 md:py-10 px-4 overflow-hidden"
       style={{ backgroundColor: data.backgroundColor }}
     >
-      {/* Background image */}
       {data.backgroundImage && (
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: `url(${data.backgroundImage})` }}
-        />
+        <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${data.backgroundImage})` }} />
       )}
 
-      <div className="relative z-10 max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          {/* Avatar / Logo */}
+      <div className="relative z-10 max-w-2xl mx-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
           <div className="flex-shrink-0">
             <div
-              className="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 flex items-center justify-center text-4xl"
-              style={{ borderColor: primaryColor, backgroundColor: 'rgba(255,255,255,0.05)' }}
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 flex items-center justify-center"
+              style={{ borderColor: primaryColor, backgroundColor: 'rgba(128,128,128,0.05)' }}
             >
               {data.avatarUrl ? (
-                <img
-                  src={data.avatarUrl}
-                  alt={data.companyName}
-                  className="w-full h-full object-cover"
-                />
+                <img src={data.avatarUrl} alt={data.companyName} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-4xl md:text-5xl opacity-40">🏢</span>
+                <span className="text-2xl opacity-30">🏢</span>
               )}
             </div>
           </div>
 
-          {/* Company Info */}
-          <div className="flex-1 text-center md:text-left">
-            <h2 className={`text-gray-900 mb-3 ${titleCls}`}>
-              {data.companyName}
-            </h2>
-            <div
-              className="w-12 h-0.5 mb-4 mx-auto md:mx-0 rounded-full"
-              style={{ backgroundColor: primaryColor }}
-            />
-            <p className={`text-gray-600 leading-relaxed whitespace-pre-wrap ${bodyCls}`}>
-              {data.description}
-            </p>
+          <div className="flex-1 text-center sm:text-left">
+            <h2 className={`text-gray-900 mb-1 ${titleCls}`}>{data.companyName}</h2>
+            <div className="w-8 h-0.5 mb-2 mx-auto sm:mx-0 rounded-full" style={{ backgroundColor: primaryColor }} />
+            <p className={`text-gray-500 leading-relaxed whitespace-pre-wrap ${bodyCls}`}>{data.description}</p>
           </div>
         </div>
       </div>
