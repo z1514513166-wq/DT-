@@ -311,6 +311,8 @@ export default function PageEditor({ initialData, isNew = true }: PageEditorProp
                     <AboutEditor avatarUrl={data.avatarUrl ?? null} companyName={data.companyName ?? ''}
                       description={data.description ?? ''} backgroundColor={data.backgroundColor ?? '#0a0a0a'}
                       backgroundImage={data.backgroundImage ?? null}
+                      titleStyle={data.titleStyle} bodyStyle={data.bodyStyle}
+                      titleColor={data.titleColor} bodyColor={data.bodyColor}
                       onChange={(v) => updateInstanceData(inst, v)} />
                   )}
                   {inst.key === 'testimonials' && (() => {

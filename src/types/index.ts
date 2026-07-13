@@ -81,6 +81,8 @@ export interface LandingPageContent {
     backgroundImage: string | null;
     titleStyle?: TextStyle;
     bodyStyle?: TextStyle;
+    titleColor?: string;
+    bodyColor?: string;
   };
   branding: {
     primaryColor: string;

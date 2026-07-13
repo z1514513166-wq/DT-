@@ -19,6 +19,8 @@ interface AboutSectionProps {
 }
 
 export default function AboutSection({ data, primaryColor }: AboutSectionProps) {
+  const titleColor = (data as any).titleColor || '#000000';
+  const bodyColor = (data as any).bodyColor || '#374151';
   if (!data.companyName && !data.description) return null;
   const titleCls = applyTextStyle(data.titleStyle) || 'text-xl md:text-2xl font-bold';
   const bodyCls = applyTextStyle(data.bodyStyle) || 'text-xs md:text-sm';
@@ -48,9 +50,9 @@ export default function AboutSection({ data, primaryColor }: AboutSectionProps) 
           </div>
 
           <div className="flex-1 text-center sm:text-left">
-            <h2 className={`text-black mb-1 ${titleCls}`}>{data.companyName}</h2>
-            <div className="w-8 h-0.5 mb-2 mx-auto sm:mx-0 rounded-full" style={{ backgroundColor: primaryColor }} />
-            <p className={`text-gray-700 leading-relaxed whitespace-pre-wrap ${bodyCls}`}>{data.description}</p>
+            <h2 className={`mb-1 ${titleCls}`} style={{ color: titleColor }}>{data.companyName}</h2>
+            <div className="w-8 h-0.5 mb-2 mx-auto sm:mx-0 rounded-full" style={{ backgroundColor: titleColor }} />
+            <p className={`leading-relaxed whitespace-pre-wrap ${bodyCls}`} style={{ color: bodyColor }}>{data.description}</p>
           </div>
         </div>
       </div>

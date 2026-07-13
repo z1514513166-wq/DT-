@@ -16,6 +16,8 @@ interface AboutEditorProps {
   backgroundImage: string | null;
   titleStyle?: TextStyle;
   bodyStyle?: TextStyle;
+  titleColor?: string;
+  bodyColor?: string;
   onChange: (data: {
     avatarUrl: string | null;
     companyName: string;
@@ -24,12 +26,14 @@ interface AboutEditorProps {
     backgroundImage: string | null;
     titleStyle?: TextStyle;
     bodyStyle?: TextStyle;
+    titleColor?: string;
+    bodyColor?: string;
   }) => void;
 }
 
 export default function AboutEditor({
   avatarUrl, companyName, description, backgroundColor, backgroundImage,
-  titleStyle, bodyStyle, onChange,
+  titleStyle, bodyStyle, titleColor, bodyColor, onChange,
 }: AboutEditorProps) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingBg, setUploadingBg] = useState(false);
@@ -37,7 +41,7 @@ export default function AboutEditor({
   const bgRef = useRef<HTMLInputElement>(null);
 
   const set = (field: string, value: any) => {
-    onChange({ avatarUrl, companyName, description, backgroundColor, backgroundImage, titleStyle, bodyStyle, [field]: value });
+    onChange({ avatarUrl, companyName, description, backgroundColor, backgroundImage, titleStyle, bodyStyle, titleColor, bodyColor, [field]: value });
   };
 
   const uploadFile = async (file: File, field: string, setUploading: (v: boolean) => void) => {
@@ -95,6 +99,10 @@ export default function AboutEditor({
       </div>
 
       <Input label="背景颜色" type="color" value={backgroundColor} onChange={(e) => set('backgroundColor', e.target.value)} />
+      <div className="grid grid-cols-2 gap-3 mt-3">
+        <Input label="标题颜色" type="color" value={titleColor || '#000000'} onChange={(e) => set('titleColor', e.target.value)} />
+        <Input label="正文颜色" type="color" value={bodyColor || '#374151'} onChange={(e) => set('bodyColor', e.target.value)} />
+      </div>
     </div>
   );
 }
