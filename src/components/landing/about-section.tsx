@@ -25,7 +25,7 @@ export default function AboutSection({ data, primaryColor }: AboutSectionProps) 
 
   return (
     <section
-      className="relative py-20 px-4 overflow-hidden"
+      className="relative py-10 md:py-20 px-4 overflow-hidden"
       style={{ backgroundColor: data.backgroundColor }}
     >
       {/* Background image */}

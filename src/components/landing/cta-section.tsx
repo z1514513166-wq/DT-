@@ -13,7 +13,7 @@ export default function CtaSection({ data, primaryColor }: CtaSectionProps) {
   const subCls = applyTextStyle(data.subheadlineStyle) || 'text-lg';
 
   return (
-    <section className="py-20 px-4 text-center" style={{ backgroundColor: data.backgroundColor }}>
+    <section className="py-10 md:py-20 px-4 text-center" style={{ backgroundColor: data.backgroundColor }}>
       <div className="max-w-3xl mx-auto">
         <h2 className={`text-white mb-4 ${headlineCls}`}>{data.headline}</h2>
         <p className={`text-gray-300 ${subCls}`}>{data.subheadline}</p>

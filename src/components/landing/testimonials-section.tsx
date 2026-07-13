@@ -55,7 +55,7 @@ export default function TestimonialsSection({
 
   return (
     <>
-      <section className="py-20 px-4 bg-gray-900">
+      <section className="py-10 md:py-20 px-4 bg-gray-900">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">
             <h2 className={`text-white mb-4 ${applyTextStyle(titleStyle) || 'text-3xl md:text-4xl font-bold'}`}>

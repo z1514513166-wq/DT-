@@ -97,7 +97,7 @@ export default function ProductCarousel({
   if (total === 0) return null;
 
   return (
-    <section className="py-16 px-4 bg-gray-950">
+    <section className="py-8 md:py-16 px-4 bg-gray-950">
       <div className="max-w-5xl mx-auto">
         {/* Title */}
         <div className="text-center mb-8">

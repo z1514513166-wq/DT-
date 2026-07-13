@@ -13,7 +13,7 @@ export default function HeroSection({ data, primaryColor }: HeroSectionProps) {
 
   return (
     <section
-      className="relative flex items-center justify-center min-h-[70vh] px-4 py-20"
+      className="relative flex items-center justify-center min-h-[60vh] md:min-h-[70vh] px-4 py-10 md:py-20"
       style={{ backgroundColor: data.backgroundColor }}
     >
       {data.backgroundImage && (
