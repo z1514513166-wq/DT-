@@ -111,8 +111,22 @@ export default function LandingPage({ content, slug }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: branding.fontFamily }}>
-      {order.map(renderSection)}
+    <div className="min-h-screen bg-white" style={{ fontFamily: branding.fontFamily }}>
+      {order.map((inst, i) => (
+        <div key={inst.id}>
+          {renderSection(inst)}
+          {/* 板块之间的柔和过渡线 */}
+          {i < order.length - 1 && (
+            <div className="relative z-10 -mt-px">
+              <div className="h-px mx-auto max-w-lg opacity-30"
+                style={{
+                  background: `linear-gradient(90deg, transparent, ${branding.primaryColor}44, transparent)`,
+                }}
+              />
+            </div>
+          )}
+        </div>
+      ))}
 
       <ScrollHint />
 

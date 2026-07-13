@@ -55,10 +55,10 @@ export default function TestimonialsSection({
 
   return (
     <>
-      <section className="py-10 md:py-20 px-4 bg-gray-900">
+      <section className="py-10 md:py-20 px-4 bg-gray-50">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">
-            <h2 className={`text-white mb-4 ${applyTextStyle(titleStyle) || 'text-3xl md:text-4xl font-bold'}`}>
+            <h2 className={`text-gray-900 mb-4 ${applyTextStyle(titleStyle) || 'text-3xl md:text-4xl font-bold'}`}>
               {title || 'What Our Customers Say'}
             </h2>
             <div className="w-20 h-1 mx-auto rounded-full" style={{ backgroundColor: primaryColor }} />
@@ -71,7 +71,7 @@ export default function TestimonialsSection({
 
               {/* 左虚影 - 叠在下方 */}
               {total > 1 && (
-                <div className="absolute inset-0 transition-all duration-600 rounded-xl overflow-hidden bg-gray-700"
+                <div className="absolute inset-0 transition-all duration-600 rounded-xl overflow-hidden bg-gray-100"
                   style={{
                     zIndex: 0,
                     opacity: 0.25,
@@ -86,7 +86,7 @@ export default function TestimonialsSection({
 
               {/* 右虚影 - 叠在下方 */}
               {total > 1 && (
-                <div className="absolute inset-0 transition-all duration-600 rounded-xl overflow-hidden bg-gray-700"
+                <div className="absolute inset-0 transition-all duration-600 rounded-xl overflow-hidden bg-gray-100"
                   style={{
                     zIndex: 0,
                     opacity: 0.25,
@@ -100,7 +100,7 @@ export default function TestimonialsSection({
               )}
 
               {/* 中间主图 - 在最上层 */}
-              <div className="absolute inset-0 transition-all duration-600 rounded-xl overflow-hidden bg-gray-700 shadow-2xl cursor-zoom-in"
+              <div className="absolute inset-0 transition-all duration-600 rounded-xl overflow-hidden bg-white border border-gray-200 shadow-lg cursor-zoom-in"
                 style={{
                   zIndex: 10,
                   transform: 'scale(0.85)',
@@ -135,7 +135,7 @@ export default function TestimonialsSection({
               {testimonials.map((_, i) => (
                 <button key={i} onClick={() => jump(i)}
                   style={{ background: 'transparent', border: 'none', WebkitTapHighlightColor: 'transparent' }}>
-                  <div className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? 'bg-white scale-125' : 'bg-white/30'}`} />
+                  <div className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? 'bg-gray-600 scale-125' : 'bg-gray-300'}`} />
                 </button>
               ))}
             </div>

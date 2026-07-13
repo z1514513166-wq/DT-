@@ -20,10 +20,10 @@ export default function HeroSection({ data, primaryColor }: HeroSectionProps) {
         <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${data.backgroundImage})` }} />
       )}
       <div className="relative z-10 max-w-4xl mx-auto text-center">
-        <h1 className={`text-white mb-6 leading-tight ${headlineCls}`}>
+        <h1 className={`text-gray-900 mb-6 leading-tight ${headlineCls}`}>
           {data.headline}
         </h1>
-        <p className={`text-gray-300 max-w-2xl mx-auto ${subCls}`}>
+        <p className={`text-gray-500 max-w-2xl mx-auto ${subCls}`}>
           {data.subheadline}
         </p>
       </div>

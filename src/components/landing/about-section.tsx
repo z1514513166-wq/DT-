@@ -58,14 +58,14 @@ export default function AboutSection({ data, primaryColor }: AboutSectionProps) 
 
           {/* Company Info */}
           <div className="flex-1 text-center md:text-left">
-            <h2 className={`text-white mb-3 ${titleCls}`} style={{ color: primaryColor }}>
+            <h2 className={`text-gray-900 mb-3 ${titleCls}`}>
               {data.companyName}
             </h2>
             <div
               className="w-12 h-0.5 mb-4 mx-auto md:mx-0 rounded-full"
               style={{ backgroundColor: primaryColor }}
             />
-            <p className={`text-gray-300 leading-relaxed whitespace-pre-wrap ${bodyCls}`}>
+            <p className={`text-gray-600 leading-relaxed whitespace-pre-wrap ${bodyCls}`}>
               {data.description}
             </p>
           </div>
